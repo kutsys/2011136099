@@ -74,7 +74,7 @@ shopt -s checkwinsize
 
 - **&&**은 AND 목록이다. AND 목록은 일련의 명령들을 수행할 때 사용한다. 한 명령이 참이면 차례로 다음 명령을 수행하고 거짓인 명령이 있으면 그 즉시 수행을 끝낸다.
 
--  **eval "$(SHELL=/bin/sh lesspipe)"**
+- **eval "$(SHELL=/bin/sh lesspipe)"**
 
   - **eval**: 주어진 인수들을 평가(evaluation)한다.
 
@@ -246,17 +246,17 @@ alias l='ls -CF'
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 ```
 
-- 1. --urgency=low
+-    1. --urgency=low
 
      - -u, --urgency는 긴급함의 정도를 나타낸다 (low, normal, critical)
 
-  2. -i "$([ $? = 0 ] && echo terminal || echo error)"
+2.   -i "$([ $? = 0 ] && echo terminal || echo error)"
 
      - -i, --icon=ICON[,ICON…]: 화면에 표시할 아이콘 파일을 지정한다.
      - **$?**은 최근 실행시킨 프로그램의 종료 값을 저장하는 환경변수다.
      - 즉, exit code가 0이면 terminal을 출력하고 그렇지 않으면 error를 출력한다.
 
-  3. $(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')
+3.   $(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')
 
      - history|tail -n1은 history에 있는 마지막 커맨드를 반환한다.
 
@@ -283,7 +283,7 @@ fi
 
 - [ 의 -f 옵션은 file이 정규적인 파일이면 참이다.
 - **'.(마침표)명령'**은 현재 셸에서 명령을 수행하게 한다. 일반적으로 스크립트에서 외부 명령이나 외부 스크립트를 수행하는 경우 하위 셸에서 실행된다. 그러나 마침표 명령을 사용하면 호출한 스크립트와 같은 셸 안에서 수행된다.
--  즉, ~/.bash_aliases가 정규적인 파일이면 현재 셸에서 ~/.bash_aliases를 실행한다.
+- 즉, ~/.bash_aliases가 정규적인 파일이면 현재 셸에서 ~/.bash_aliases를 실행한다.
 
 ### PART14
 
@@ -303,3 +303,104 @@ fi
 - shopt 명령어의 -o 옵션은 뒤에오는 optname의 설정 값을 확인할 수 있다. -q 옵션은 출력하지 않는다.
 - 즉, shopt의 posix가 off라면 다음을 시행한다.
   - /usr/share/bash-completion/bash_completion이 정규적인 파일이면 현재 셸에서 /usr/share/bash-completion/bash_completion을 실행한다. 만일 그렇지 않고 /etc/bash_completion가 정규적인 파일이면 현재 셸에서 /etc/bash_completion을 실행한다.
+
+
+# 나만의 Prompt 꾸미기
+
+### .bash_profile
+
+```{.bash}
+export PS1="\[\033[0;36m\][\[\033[0;37m\]\d-\t-\[\033[0;34m\]\u@\\[\033[0;36m\]\W]\$ "
+#export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+```
+
+- **$PS1**: 1차 명령 프롬프트 변수
+
+  - **PS1**의 값을 적절하게 바꾸면 원하는 형식의 프롬프트로 설정 할 수 있다.
+
+- **export**
+
+  - export 명령은 변수 이름을 하위셸의 매개변수들로 사용할 수 있게 만든다. 기본적으로 한 셸안에서 생성된 변수는 그 셸에서 호출한 하위셸들에서 사용하지 못한다. export 명령으로 내보낸 변수는 원래 셸에서 파생된 임의의 자식 프로세스들에서 환경 변수로 존재하게 된다.
+
+- **.bash_profile**
+
+  - 셸 로그인 시 적용되는 사용자별 셸 환경에 대한 설정 파일이다.
+  - 이들 환경 변수들은 오직 그 사용자에게만 한정되며, 그 이외의 다른 사람에게는 영향을 미치지 않는다. 이 파일은 전역적인 설정 파일인 /etc/profile이 실행된 후 실행된다.
+  - 일반적으로 PS1은 /etc/profile에 정의되는데, ~/.bash_profile에 다시 정의함으로써 해당 사용자의 프롬프트 설정만 재정의 할 수 있다.
+  - 오직 root 권한을 가진 자만이 /etc/profile의 내용을 변경할 수 있으므로, 각 사용자는 ~/.bash_profile에서 환경 변수를 재정의함으로써 자신만의 환경을 설정한다.
+
+- PS1 변수에 사용되는 기호
+
+  > variable	note
+  > \a	an ASCII bell character (07)
+  > \d	the date in "Weekday Month Date" format (e.g., "Tue May 26")
+  > \D{format}	the format is passed to strftime(3) and the result is inserted into the prompt string; an empty format results in a locale-specific time representation. The braces are required
+  > \e	an ASCII escape character (033)
+  > \h	the hostname up to the first ‘.’
+  > \H	the hostname
+  > \j	the number of jobs currently managed by the shell
+  > \l	the basename of the shell’s terminal device name
+  > \n	newline
+  > \r	carriage return
+  > \s	the name of the shell, the basename of $0 (the portion following the final slash)
+  > \t	the current time in 24-hour HH:MM:SS format
+  > \T	the current time in 12-hour HH:MM:SS format
+  > \@	the current time in 12-hour am/pm format
+  > \A	the current time in 24-hour HH:MM format
+  > \u	the username of the current user
+  > \v	the version of bash (e.g., 2.00)
+  > \V	the release of bash, version + patch level (e.g., 2.00.0)
+  > \w	the current working directory, with $HOME abbreviated with a tilde (uses the $PROMPT_DIRTRIM variable)
+  > \W	the basename of the current working directory, with $HOME abbreviated with a tilde
+  > \\!	the history number of this command
+  > \\#	the command number of this command
+  > \\$	if the effective UID is 0, a #, otherwise a $
+  > \nnn	the character corresponding to the octal number nnn
+  > \\	a backslash
+  > \\[	begin a sequence of non-printing characters, which could be used to embed a terminal control sequence into the prompt
+  > \\]	end a sequence of non-printing characters
+
+- **ANSI color**
+
+  - ANSI 컬러는 ANSI escape code의 기능 중 하나이다. ANSI escape code는 터미널의 텍스트 포맷을 제어하기 위해서 만들어진 코드이며 ISO/IEC-6429 표준으로 제정되어있다.
+
+  - ANSI Escape sequence = CSI + n [;+ ...] + letter
+
+    - CSI(Control Sequence Introducer): ANSI escape sequence에서 시작문자
+
+      > CSI = \e[ = \033[
+
+    - n [;+ …]: n은 숫자다. 복수개가 나올때는 세미콜론(;)으로 구분한다
+
+    - letter: 영문자 1개, ANSI escape sequence의 명령(command)에 해당한다.
+
+      > T: 스크롤 다운, m: 색상 변경 등
+
+  - 색상표
+
+    > Intensity	0		1		2		3		4		5			6		7		9
+
+    > Normal	Black	Red		Green	Yellow	Blue	Magenta	Cyan	White	reset
+
+    > Bright	Black	Red		Green	Yellow	Blue	Magenta	Cyan	White
+
+  - 예제
+
+    - \033[0;36m : \033[는 CSI다. 그 후 나오는 0은 Reset / Normal 기능으로 앞서 설정된 속성들을 초기화한다. 두 번째 인수인 36에서 일의 자리인 6은 Cyan 색상을 나타낸다. 십의 자리인 3은 Cyan 색 중 normal intensity를 선택해 글자색으로 변경하라는 뜻이다. m은 색상 변경 명령이다. 즉 해당 명령어 이후의 글자는 Cyan 색으로 나타난다.
+
+- **나의 프롬프트**
+
+  - ```{.bash}
+    export PS1="\[\033[0;36m\][\[\033[0;37m\]\d-\t-\[\033[0;34m\]\u@\\[\033[0;36m\]\W]\$ "
+    ```
+
+  - 해석
+
+    > (Cyan) "[" (White) "현재 날짜-현재시간" (Blue) "-현재사용자명"@ (Cyan) "현재 디렉토리의 basename$ "
+
+
+
+# 고찰 및 느낀점
+
+- .bashrc의 내용을 해석하다 보니 자연스럽게 셸 스크립트를 공부하기 위해 책과 학습자료를 펼쳤습니다. 셸 스크립트에 대한 이해 없이 무작정 내용을 해석하려고 하니 애매한 부분과 이해가 안 가는 곳이 대다수였기 때문입니다. 예를 들어 부울 판정 구문인 ' [ '에 대해서 학습을 하기 이전에는 단순 괄호로 생각했습니다. 그러나 학습을 통해 ' [ '이 test 명령과 동의어라는 것을 알고 나니 셸 스크립트의 이해도가 높아졌습니다. ' [ ' 뿐만 아니라 따옴표 처리와 같은 세세한 규칙들부터 'AND 목록', 'OR 목록'을 이용한 일련의 명령어 처리, 'eval', '.', 등과 같은 명령들 그리고 정규표현식과 매개변수 치환 구문 등 다양한 셸 스크립트의 문법을 공부하면서 리눅스 셸의 강력함이 무엇인지 와 닿았습니다. 간단하고 축약된 기능들을 사용해 강력한 기능을 더욱 쉽게 구현할 수 있는 셸 스크립트의 매력을 느끼게 되어 앞으로 개발하게 될 프로그램의 프로토타입 제작용으로 요긴하게 쓰게 될 것 같습니다. 또한, 나만의 프롬프트를 만들고 터미널을 사용하니 같은 리눅스지만 다른 시스템에 설치된 리눅스보다 제 컴퓨터에 설치된 리눅스에 더욱 애정이 생겼습니다.
+
