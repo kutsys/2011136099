@@ -1,8 +1,10 @@
+#include <unistd.h>     // fstat
+#include <sys/stat.h>   // 파일 정보, 시스템 호출들을 사용하는 경우 권장, 일부 UNIX 시스템에서는 필요
 #include <stdio.h>  // 표준 I/O 라이브러리
 #include <time.h>   // 시간 관련 라이브러리
 
-// block_count 변수의 최대값
-#define MAX_BLOCK_COUNT 10
+// default 파일 사이즈
+#define DEFAULT_FILE_SIZE 100
 
 // 디버깅을 고려
 #ifndef DEBUG
@@ -15,6 +17,10 @@ int main(int argc, char* argv[]) {
     FILE *in, *out;             // 원본파일과 복사파일의 스트림
     int nread;                  // 읽어들인 레코드 개수
     int block_count = 1;        // 1block 복사 카운트
+    
+    // 파일 사이즈를 추출 및 저장
+    struct stat file_info;
+    int file_size = 0;
     
     // 실행시 시각 데코레이션을 위한 변수
     struct tm *tm_ptr;
@@ -69,6 +75,12 @@ int main(int argc, char* argv[]) {
         return -1;
     }
     
+    // 파일 사이즈 추출 및 저장 ('*' 출력 시간 조절)
+    if(stat(srcfile, &file_info) == -1)
+        file_size = DEFAULT_FILE_SIZE;
+    else
+        file_size = file_info.st_size / 1024;
+    
     // 복사 시작 시간 저장
     start_time = clock();
     
@@ -85,8 +97,8 @@ int main(int argc, char* argv[]) {
         }
         
         block_count++;          // 한 블럭을 복사하면 카운트를 증가시킨다.
-        // 총 10개의 블럭 즉 10K를 복사하면 * 하나를 출력한다.
-        if (block_count >= MAX_BLOCK_COUNT) {
+        // file_size/10 블럭을 복사하면 하나의 *을 출력한다.
+        if (block_count >= file_size/10) {
             block_count = 1;
             printf("*");
         }
