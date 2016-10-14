@@ -101,6 +101,7 @@ int main(int argc, char* argv[]) {
         if (block_count >= file_size/10) {
             block_count = 1;
             printf("*");
+            fflush(stdout);
         }
     }
     
