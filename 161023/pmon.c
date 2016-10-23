@@ -196,7 +196,16 @@ void send_alarm(void) {
     pid_t test_PID;
     test_PID = get_pid_of_ptest();
 
-    kill(test_PID, SIGALRM);
+    move(ROW_INIT + 2, 0);
+    clrtoeol();
+    if(test_PID == -1)
+        printw("can't send signal.");
+    else {
+        printw("send alarm signal to ptest.");
+        kill(test_PID, SIGALRM);
+    }
+    move(ROW_INIT + 1, 3);
+    refresh();
 }
 /*
  ptest 프로세스를 kill한다.
@@ -265,7 +274,13 @@ int start_ptest(char* path) {
 int restart_ptest(char* path) {
     char cmd_str[1024];
     sprintf(cmd_str,"gnome-terminal -e %s",path);
-    
+
+    move(ROW_INIT + 2, 0);
+    clrtoeol();
+    printw("Force restart ptest.");
+    move(ROW_INIT + 1, 3);
+    refresh();
+
     if (kill_ptest() == -1) {
         move(ROW_INIT + 2, 0);
         clrtoeol();
@@ -273,11 +288,6 @@ int restart_ptest(char* path) {
         move(ROW_INIT + 1, 3);
         refresh();
     }
-    move(ROW_INIT + 2, 0);
-    clrtoeol();
-    printw("Force restart ptest.");
-    move(ROW_INIT + 1, 3);
-    refresh();
     
     system(cmd_str);
     return 0;
