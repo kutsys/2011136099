@@ -2,6 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <signal.h>
+
+/*
+ Signal 핸들러 함수
+*/
+void ouch(int sig) {
+    printf("OUCH! - I got signal %d\n", sig);
+}
 
 int main(int argc, char* argv[]) {
     
@@ -12,6 +20,16 @@ int main(int argc, char* argv[]) {
      */
     time_t start_time, last_time;
     double diff;
+
+    /* sigaction을 이용해 SIGALRM 신호를 처리한다. */
+    struct sigaction act;
+
+    act.sa_handler = ouch;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+
+    sigaction(SIGALRM, &act, 0);
+
     start_time = time((time_t*)0);
 
     while(1) {

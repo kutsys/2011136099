@@ -15,6 +15,7 @@
 
 /* 메뉴 문자열 */
 char *menu[] = {
+    "a - Send alarm to ptest",
     "k - Force quit ptest",
     "s - Start ptest",
     "r - Restart ptest",
@@ -30,10 +31,12 @@ int get_pid_of_ptest(void);
 void check_ptest(void);
 
 /*
+ send_alarm: ptest에 alarm signal을 전송
  kill_ptest: ptest가 실행중이라면 프로세스를 죽인다.
  start_ptest: ptest를 새로운 터미널에서 실행시킨다.
  restart_ptest: ptest를 새로 실행시킨다.
  */
+void send_alarm(void);
 int kill_ptest(void);
 int start_ptest(char* path);
 int restart_ptest(char* path);
@@ -93,6 +96,9 @@ int main(int argc, char* argv[]) {
         choice = get_choice(menu);
         
         switch(choice) {
+            case 'a':
+                send_alarm();
+                break;
             case 'k':
                 kill_ptest();
                 break;
@@ -183,6 +189,15 @@ void check_ptest(void) {
     i++;
 }
 
+/*
+ ptest에 SIGALRM을 보낸다.
+ */
+void send_alarm(void) {
+    pid_t test_PID;
+    test_PID = get_pid_of_ptest();
+
+    kill(test_PID, SIGALRM);
+}
 /*
  ptest 프로세스를 kill한다.
  kill하기 전에 먼저 실행여부를 확인한다.
