@@ -48,16 +48,22 @@ int restart_ptest(char* path);
 int get_choice(char* choices[]);
 void print_menu(char *menu[]);
 
+/* SIGTERM 핸들러 */
+void hand_sigterm(int sig) {
+    exit(0);
+}
 
 int main(int argc, char* argv[]) {
     pid_t pid;      /* fork()시 사용할 프로세스 아이디 */
     char buf[80];   /* ptest 경로 */
     FILE* fp;       /* config.cfg 파일 스트림 */
     int choice = 0; /* 사용자 입력 값 */
+    int stat_val;   /* 자식 프로세스의 종료 상태 */
     
     /* curses 라이브러리 초기화 */
     initscr();
     
+    signal(SIGTERM, hand_sigterm);
     /* config.cfg에 저장된 ptest 경로를 buf로 받아온다. */
     fp = fopen("config.cfg", "r");
     
@@ -119,14 +125,23 @@ int main(int argc, char* argv[]) {
         }
     } while(choice != 'q');
     
-    move(ROW_INIT + 2,0);
+    move(ROW_INIT + 2, 0);
     clrtoeol();
     printw("exit pmon.");
     refresh();
     
     /* 자식 프로세스의 종료를 기다린다. */
-    wait(NULL);
+    wait(&stat_val);
+
+    move(ROW_INIT + 3.0, 0);
+    clrtoeol();
+    if(WIFEXITED(stat_val))
+        printw("Child exited with code %d",WEXITSTATUS(stat_val));
+    else
+        printw("Child terminated abnormally\n");
+    refresh();
     
+    sleep(2);
     /* 윈도우를 정리하고 pmon을 종료한다. */
     move(LINES - 1, COLS -1);
     refresh();

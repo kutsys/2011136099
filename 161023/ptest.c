@@ -11,6 +11,10 @@ void ouch(int sig) {
     printf("OUCH! - I got signal %d\n", sig);
 }
 
+void hand_sigterm(int sig) {
+    exit(0);
+}
+
 int main(int argc, char* argv[]) {
     
     /*
@@ -29,6 +33,7 @@ int main(int argc, char* argv[]) {
     act.sa_flags = 0;
 
     sigaction(SIGALRM, &act, 0);
+    signal(SIGTERM, hand_sigterm);
 
     start_time = time((time_t*)0);
 
