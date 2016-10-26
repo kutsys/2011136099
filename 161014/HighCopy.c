@@ -2,6 +2,7 @@
 #include <sys/stat.h>   // 파일 정보, 시스템 호출들을 사용하는 경우 권장, 일부 UNIX 시스템에서는 필요
 #include <stdio.h>  // 표준 I/O 라이브러리
 #include <time.h>   // 시간 관련 라이브러리
+#include "defbufsize.h"
 
 // default 파일 사이즈
 #define DEFAULT_FILE_SIZE 100
@@ -13,7 +14,7 @@
 
 int main(int argc, char* argv[]) {
     char *srcfile, *dstfile;    // 원본파일명, 복사파일명
-    char block[1024];           // buffer, 1K 단위로 복사한다.
+    char block[USR_BUF];           // buffer, 1K 단위로 복사한다.
     FILE *in, *out;             // 원본파일과 복사파일의 스트림
     int nread;                  // 읽어들인 레코드 개수
     int block_count = 1;        // 1block 복사 카운트
@@ -43,6 +44,11 @@ int main(int argc, char* argv[]) {
     // 실행시 현재 시각 출력
     printf("현재시각: %02d/%02d/%02d ", tm_ptr->tm_year+1900, tm_ptr->tm_mon+1, tm_ptr->tm_mday);
     printf("(%02d:%02d:%02d)\n", tm_ptr->tm_hour, tm_ptr->tm_min, tm_ptr->tm_sec);
+
+    // 시스템 버퍼 사이즈 출력
+    printf("System Buffer Size : %d\n",BUFSIZ);
+    // 유저 버퍼 사이즈 출력
+    printf("usr Buffer size : %d\n",USR_BUF);
     
     // 실행인자로 부터 원본파일과 복사파일의 이름을 입력받음.
     if (argc != 3) {
@@ -79,7 +85,7 @@ int main(int argc, char* argv[]) {
     if(stat(srcfile, &file_info) == -1)
         file_size = DEFAULT_FILE_SIZE;
     else
-        file_size = file_info.st_size / 1024;
+        file_size = file_info.st_size / USR_BUF;
     
     // 복사 시작 시간 저장
     start_time = clock();
