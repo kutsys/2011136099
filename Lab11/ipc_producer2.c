@@ -1,5 +1,7 @@
 #include "myshm.h"
 
+#define INPUT_LENGTH 20
+
 static int sem_id;
 
 // 세마포를 초기화한다.
@@ -56,7 +58,7 @@ int main(int argc, char **argv) {
     void *shared_memory = (void *)0;
     struct shared_use_st *shared_stuff;
     int shmid;
-    char str_input[BUFSIZ];
+    char str_input[INPUT_LENGTH];
     const char* my_ID = "2011136099";
 
     // 세마포 생성
@@ -94,7 +96,7 @@ int main(int argc, char **argv) {
     printf("Enter 'start' to start.\n");
  
     do {
-        fgets(str_input, BUFSIZ, stdin);
+        fgets(str_input, INPUT_LENGTH, stdin);
     } while(strncmp(str_input, "start", 5) != 0);
 
     // 전달할 데이터 입력 (pid와 학번) 
