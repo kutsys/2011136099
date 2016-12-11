@@ -72,10 +72,14 @@ int main(int argc, char **argv) {
     }
     shared_stuff = (struct shared_use_st *)shared_memory;
 
+    printf("Waiting Producer...\n");
+    if(!semaphore_v()) exit(EXIT_FAILURE);
+
+    // PID와 학번을 읽어들임. 출력.
     if(!semaphore_p()) exit(EXIT_FAILURE);
     printf("PRODUCER: %d, ID: %s\n", shared_stuff->pid, shared_stuff->some_text);
-        shared_stuff->pid = getpid();
-        strcpy(shared_stuff->some_text, my_NAME);
+    shared_stuff->pid = getpid();
+    strcpy(shared_stuff->some_text, my_NAME);
     if(!semaphore_v()) exit(EXIT_FAILURE);
 
     // 공유메모리를 떼어낸다.

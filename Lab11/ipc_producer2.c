@@ -88,16 +88,21 @@ int main(int argc, char **argv) {
     shared_stuff = (struct shared_use_st *)shared_memory;
 
     if(!semaphore_p()) exit(EXIT_FAILURE);
+    printf("Waiting Consumer...\n");
+
+    if(!semaphore_p()) exit(EXIT_FAILURE);
     printf("Enter 'start' to start.\n");
  
     do {
         fgets(str_input, BUFSIZ, stdin);
     } while(strncmp(str_input, "start", 5) != 0);
- 
+
+    // 전달할 데이터 입력 (pid와 학번) 
     shared_stuff->pid = getpid();
     strcpy(shared_stuff->some_text, my_ID);
     if(!semaphore_v()) exit(EXIT_FAILURE);
     
+    // CONSUMER의 PID와 이름 읽어들임.
     if(!semaphore_p()) exit(EXIT_FAILURE);
         printf("PRODUCER: %d, CONSUMER: %d, ID: %s, NAME: %s\n", getpid(), shared_stuff->pid, my_ID, shared_stuff->some_text);
     if(!semaphore_v()) exit(EXIT_FAILURE);
