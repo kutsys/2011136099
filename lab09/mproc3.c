@@ -19,20 +19,20 @@ void *test_func(void *arg) {
     char buf[16];
     int id = *(int*)arg;
     int r = 0;
+    int time_update = 1;
     
     while(cnt_call < MAX_CALL) {
-        r = rand()%10;
-        sleep(r);
-        (void)time(&timevar);
-        ptr_tm = localtime(&timevar);
-        strftime(buf, 16, "%H:%M:%S", ptr_tm);
-        
-        while (cnt_call == base_count);
-        
+        if(time_update) {
+            r = rand()%10;
+            sleep(r);
+            (void)time(&timevar);
+            ptr_tm = localtime(&timevar);
+            strftime(buf, 16, "%H:%M:%S", ptr_tm);
+        }
+         
         if (cnt_call < base_count) {
             pthread_mutex_lock(&mutex); // 잠금을 생성한다.
             printf("ID: %2d, TIME: %s, COUNT: %d\n", id, buf, cnt_call+1);
-            cnt_call++;
             
             check_change++;
             if(check_change == NUM_OF_THREAD) {
@@ -40,6 +40,12 @@ void *test_func(void *arg) {
                 base_count++;
             }
             pthread_mutex_unlock(&mutex);   // 잠금을 해제한다.
+            
+            cnt_call++;
+            time_update = 1;
+        }
+        else {
+            time_update = 0;
         }
     }
     
