@@ -5,7 +5,7 @@ int main(int argc, char **argv) {
     struct my_msg_st some_data;
     long int msg_to_receive = 1;
     const char* my_NAME = "임용민";
-    size_t msg_size = MAX_TEXT + sizeof(pid_t);
+    size_t msg_size = sizeof(some_data) - sizeof(long);
 
     // 메시지 대기열 설정
     msgid = msgget((key_t)1256, 0666 | IPC_CREAT);

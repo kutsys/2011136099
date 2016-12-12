@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
     long int msg_to_receive = 2;
     const char* my_ID = "2011136099";
     char str_input[INPUT_LENGTH];
-    size_t msg_size = MAX_TEXT + sizeof(pid_t);
+    size_t msg_size = sizeof(some_data) - sizeof(long);
 
     // 메시지 대기열 설정
     msgid = msgget((key_t)1256, 0666 | IPC_CREAT);
